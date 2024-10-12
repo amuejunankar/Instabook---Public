@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user_profile.user.username }}'s Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .ua_container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .ua_profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .ua_profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 30px;
+        }
+        .ua_profile-info {
+            flex-grow: 1;
+        }
+        .ua_username {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .ua_name {
+            font-size: 18px;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .ua_description {
+            font-size: 16px;
+            font-weight: 300;
+            color: #888;
+        }
+        .ua_counts {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+        .ua_count {
+            text-align: center;
+        }
+        .ua_count h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .ua_count p {
+            font-size: 16px;
+            font-weight: 400;
+            color: #666;
+        }
+        .ua_posts {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -10px;
+        }
+        .ua_post {
+            width: calc(33.333% - 20px);
+            margin: 10px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .ua_post img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+        .ua_post img:hover {
+            transform: scale(1.05);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+    </style>
+    
+</head>
+<body>
+    {% include 'user/navbar.html' %}
+    <div class="ua_container">
+        <div class="ua_profile-header">
+            {% if user_profile.profile_picture %}
+                <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture" class="ua_profile-picture">
+            {% else %}
+                <img src="https://via.placeholder.com/120x120?text=No+Image" alt="Profile Picture" class="ua_profile-picture">
+            {% endif %}
+            <div class="ua_profile-info">
+                <div class="ua_username">{{ user_profile.user.username }}</div>
+                <div class="ua_name">{{ user_profile.user.get_full_name }}</div>
+                <div class="ua_description">{{ user_profile.bio }}</div>
+            </div>
+        </div>
+        <div class="ua_counts">
+            <div class="ua_count">
+                <h3>{{ post_count }}</h3>
+                <p>Posts</p>
+            </div>
+            <div class="ua_count">
+                <h3>{{ friend_count }}</h3>
+                <p>Friends</p>
+                <a href="{% url 'friends_list' %}" class="btn btn-primary">View Friends</a>
+            </div>
+        </div>
+        {% if show_posts %}
+            <h2>Posts</h2>
+            <div class="ua_posts">
+                {% if user_posts %}
+                    {% for post in user_posts %}
+                        <div class="ua_post">
+                            <a href="{% url 'post_detail' post.id %}"><img src="{{ post.image.url }}" alt="Post Image"></a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No posts found.</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>This account is private. Follow to see the posts.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 350px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.title {
+    color: #333;
+    text-align: center;
+}
+
+.section-title {
+    color: #007bff;
+    margin-top: 30px;
+}
+
+.book-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.book-item {
+    margin-bottom: 10px;
+}
+
+.username {
+    font-weight: bold;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.login-link,
+.signup-link {
+    margin-right: 10px;
+}
+
+.logout-link {
+    color: red;
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+    <style>
+        .profile-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .profile-picture {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .profile-info {
+            flex-grow: 1;
+        }
+        .follow-button {
+            margin-left: 10px;
+        }
+        .cancel-button {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'user/navbar.html' %}
+    <div class="container">
+        <h1 class="my-4">Search Results</h1>
+        {% if user_profiles %}
+            <div class="list-group">
+                {% for profile in user_profiles %}
+                    <div class="profile-item">
+                        {% if profile.profile_picture %}
+                            <a href="{% url 'view_profile' profile.user.id %}">
+                                <img src="{{ profile.profile_picture.url }}" class="profile-picture" alt="Profile Picture" />
+                            </a>
+                        {% else %}
+                            <a href="{% url 'view_profile' profile.user.id %}">
+                                <img  class="profile-picture" alt="Default Profile Picture" />
+                            </a>
+                        {% endif %}
+                        <div class="profile-info">
+                            <h5 class="mb-1">
+                                <a href="{% url 'view_profile' profile.user.id %}">{{ profile.user.username }}</a>
+                            </h5>
+                            <p class="mb-0">{{ profile.user.first_name }} {{ profile.user.last_name }}</p>
+                        </div>
+                        {% if profile.user.id in friend_requests_sent %}
+                            <div>
+                                <form method="post" action="{% url 'cancel_friend_request' profile.user.id %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger cancel-button">Cancel Request</button>
+                                </form>
+                            </div>
+                            <button class="btn btn-secondary follow-button" disabled>Request Sent</button>
+                        {% elif profile.user.id in friends %}
+                            <button class="btn btn-success follow-button" disabled>Friends</button>
+                        {% else %}
+                            <form method="post" action="{% url 'send_friend_request' profile.user.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-primary follow-button">+ Add Friend</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No users found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Friend Requests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #eef2f5, #d3d8e0);
+            color: #333;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 50px;
+        }
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none;
+            border-bottom: 1px solid #eee;
+            padding: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        .list-group-item:hover {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            margin-left: 10px;
+            padding: 8px 12px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-radius: 20px;
+        }
+        .btn-success:hover {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .friend-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        .friend-username {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .friend-action-buttons {
+            display: flex;
+            align-items: center;
+        }
+        h2 {
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #007bff;
+            text-align: center;
+        }
+        p.no-requests {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #888;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'user/navbar.html' %}
+    <div class="container mt-5">
+        <h2>Friend Requests</h2>
+        {% if friend_requests %}
+            <ul class="list-group">
+                {% for friend_request in friend_requests %}
+                    <li class="list-group-item">
+                        <div class="friend-info">
+                            <span class="friend-username">{{ friend_request.from_user.username }}</span>
+                        </div>
+                        <div class="friend-action-buttons">
+                            <a href="{% url 'accept_friend_request' friend_request.id %}" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Accept</a>
+                            <a href="{% url 'decline_friend_request' friend_request.id %}" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Decline</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-requests">No friend requests</p>
+        {% endif %}
+    </div>
+
+
+</body>
+</html>

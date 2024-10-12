@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% load static %}
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Settings</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      .us_main-content {
+        margin-left: 15%;
+        margin-right: 15%;
+        margin-top: 2.5%;
+      }
+      
+      /* Custom CSS for navbar */
+      .us_navbar {
+        background-color: #555e68;
+        padding: 14px 0;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+      }
+      
+      .us_navbar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .us_navbar li {
+        display: inline-block;
+        margin-right: 20px;
+      }
+      
+      .us_navbar a {
+        text-decoration: none;
+        color: #ffffff;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+      
+      .us_navbar a.active {
+        background-color: #4969d3;
+      }
+      
+      .us_main-content .us_container22 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
+      }
+      
+      .us_nav-link.active {
+        color: #000000 !important;
+        background-color: #4ac8ee !important;
+        transition: 300ms;
+        padding: 10px 12px;
+        border-radius: 12px;
+      }
+      
+      .us_nav-link:hover {
+        text-decoration: none;
+        color: rgb(0, 0, 0);
+        background-color: wheat;
+        transition: 300ms;
+        padding: 10px 12px;
+        border-radius: 12px;
+      }
+      
+      .pr-md-3::after {
+        content: '';
+        border-left: 1px solid #ced4da;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+      
+      .pl-md-3 {
+        position: relative;
+        padding-left: 15px;
+      }
+      
+      #profileSettingsSection,
+      #loginHistorySection,
+      #privacySettingsSection,
+      #dataSection {
+        background-color: rgb(230, 255, 207);
+        padding: 24px 24px;
+        border-bottom-left-radius: 14px;
+        border-bottom-right-radius: 14px;
+      }
+      
+      #profileSettingsSection input {
+        border-radius: 14px;
+      }
+      
+      .loginHistory_table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      .loginHistory_th,
+      .loginHistory_td {
+        border: 1px solid #dddddd;
+        padding: 8px;
+        text-align: left;
+      }
+      
+      .loginHistory_th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  {% include 'user/navbar.html' %}
+
+  <body>
+    <div class="us_main-content">
+      <nav class="us_navbar">
+        <div class="us_container22">
+          <div class="us_navv">
+            <ul>
+              <li>
+                <a class="us_nav-link" href="#" id="profileSettingsLink">Profile Settings</a>
+              </li>
+              <li>
+                <a class="us_nav-link" href="#" id="privacySettingsLink">Privacy Settings</a>
+              </li>
+              <li>
+                <a class="us_nav-link" href="#" id="loginHistoryLink">Login History</a>
+              </li>
+              <li>
+                <a class="us_nav-link" href="#" id="dataLink">Data & Access</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Profile Settings Section -->
+      <div id="profileSettingsSection">
+        <h2>Profile Settings</h2>
+        <div class="row">
+          <!-- Left side for user information -->
+          <div class="col-md-6 pr-md-3">
+            <!-- user_settings.html -->
+            <form id="profileForm" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="profilechnagesForm" />
+              <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly />
+              </div>
+
+              <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" value="{{ user.first_name }}" />
+              </div>
+
+              <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" value="{{ user.last_name }}" />
+              </div>
+
+              <!-- Add description field -->
+              <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" class="form-control" id="description" name="description" maxlength="50" value="{{ request.user.profile.description }}" />
+              </div>
+
+              <!-- user_settings.html -->
+              <div class="form-group">
+                <label for="profilePicture">Profile Picture:</label>
+                <div>
+                  {% if user_profile and user_profile.profile_picture %}
+                    <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture" style="width: 125px; height: 125px; border-radius: 50%; margin-right: 5px;" />
+                  {% else %}
+                    <img src="{% static 'img/account.png' %}" alt="Profile Picture" style="width: 125px; height: 125px; border-radius: 50%; margin-right: 5px;" />
+                  {% endif %}
+                </div><br />
+                <input type="file" class="form-control-file" id="profilePicture" name="profilePicture" />
+              </div>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+          </div>
+
+          <!-- Right side for password change -->
+          <div class="col-md-6 pl-md-3">
+            <form id="passwordChangeForm">
+              <input type="hidden" name="passwordChangeForm" />
+              <div class="form-group">
+                <label for="currentPassword">Current Password:</label>
+                <input type="password" class="form-control" id="currentPassword" name="currentPassword" />
+              </div>
+              <div class="form-group">
+                <label for="newPassword">New Password:</label>
+                <input type="password" class="form-control" id="newPassword" name="newPassword" />
+              </div>
+              <div class="form-group">
+                <label for="confirmNewPassword">Confirm New Password:</label>
+                <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" />
+              </div>
+              <button type="button" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Privacy Settings Section -->
+      <div id="privacySettingsSection" style="display: none;">
+        <h2>Privacy Settings</h2>
+        <form id="privacySettingsForm" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="privacySettingsForm_name" />
+          <div class="form-group">
+            <label for="accountVisibility">Account Visibility:</label>
+            <select class="form-control" id="accountVisibility" name="accountVisibility" style="max-width: 230px;">
+              {% if user_profile %}
+                {% if user_profile.account_visibility == 'public' %}
+                  <option value="public" selected>Public</option>
+                  <option value="private">Private</option>
+                {% else %}
+                  <option value="public">Public</option>
+                  <option value="private" selected>Private</option>
+                {% endif %}
+              {% else %}
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              {% endif %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Additional Privacy Features:</label>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="hideEmail" name="hideEmail" />
+              <label class="custom-control-label" for="hideEmail">Hide Email Address</label>
+            </div>
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="hideActivity" name="hideActivity" />
+              <label class="custom-control-label" for="hideActivity">Hide Activity Status</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
+
+      <!-- Login History Section -->
+      <div id="loginHistorySection" style="display: none;">
+        <h2>Login History</h2>
+        <div class="loginHistory_history">
+          <table class="loginHistory_table">
+            <tr>
+              <th class="loginHistory_th">Date and Time</th>
+              <th class="loginHistory_th">IP Address</th>
+            </tr>
+            {% if login_history %}
+              {% for entry in login_history %}
+                <tr>
+                  <td class="loginHistory_td">{{ entry.last_login }}</td>
+                  <td class="loginHistory_td">{{ entry.ip_address }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td class="loginHistory_td" colspan="2">No login history available.</td>
+              </tr>
+            {% endif %}
+          </table>
+        </div>
+      </div>
+
+      <!-- Data & Access Section -->
+      <div id="dataSection" style="display: none;">
+        <h2>Data & Access</h2>
+
+        <!-- Data Deletion Form -->
+        <form method="post" action="{% url 'delete_data' %}">
+          {% csrf_token %}
+          <input type="hidden" name="data_deletion" />
+          <div class="form-group">
+            <label for="reason">Reason for Data Deletion:</label>
+            <textarea style="width: 450px;border-radius: 12px; " class="form-control" id="reason" name="reason" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Request Data Deletion</button>
+        </form>
+        <br />
+
+        <!-- Account Deletion Form -->
+        <form method="post" action="{% url 'delete_account' %}">
+          {% csrf_token %}
+          <p>This action will delete your account</p>
+          <button type="submit" class="btn btn-danger" id="deleteAccountBtn">Delete Account</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // JavaScript for showing/hiding sections based on menu click
+      $(document).ready(function () {
+        $('#profileSettingsLink').on('click', function () {
+          showSection('profileSettingsSection')
+        })
+      
+        $('#privacySettingsLink').on('click', function () {
+          showSection('privacySettingsSection')
+        })
+      
+        $('#loginHistoryLink').on('click', function () {
+          showSection('loginHistorySection')
+        })
+      
+        $('#dataLink').on('click', function () {
+          showSection('dataSection')
+        })
+      
+        $('#accessibilityLink').on('click', function () {
+          showSection('accessibilitySection')
+        })
+      
+        // Function to show a specific section and hide others
+        function showSection(sectionId) {
+          $('.us_main-content > div').hide()
+          $('#' + sectionId).show()
+        }
+      
+        // jQuery for setting active class on click
+        $('.us_nav-link').on('click', function () {
+          $('.us_nav-link').removeClass('active')
+          $(this).addClass('active')
+        })
+      })
+    </script>
+  </body>
+</html>

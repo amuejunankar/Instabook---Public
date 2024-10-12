@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Detail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            display: flex;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+        .post-image-container {
+            flex: 1;
+            margin-right: 20px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .post-image {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .post-content {
+            flex: 1;
+            max-width: calc(100% - 220px);
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .post-header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .caption-section {
+            margin-bottom: 20px;
+        }
+        .caption-section h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .like-section {
+            margin-bottom: 20px;
+        }
+        .comment-section {
+            margin-bottom: 20px;
+        }
+        .comment-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+        }
+        .comment-item strong {
+            color: #007bff;
+        }
+        .comment-item small {
+            color: #666;
+        }
+        .comment-form textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            padding: 10px;
+            resize: none;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #bd2130;
+            border-color: #bd2130;
+        }
+
+        /* Media Query for Mobile */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .post-image-container {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            .post-content {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'user/navbar.html' %}
+    <div class="container">
+        <div class="post-image-container">
+            <img src="{{ post.image.url }}" alt="Post Image" class="post-image">
+        </div>
+        <div class="post-content">
+            <div class="post-header">
+                <h1>Post Details</h1>
+                {% if post.user == request.user %}
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" name="delete" class="btn btn-danger">Delete Post</button>
+                </form>
+                {% endif %}
+            </div>
+            <div class="caption-section">
+                <h3>Caption</h3>
+                <p>{{ post.caption }}</p>
+            </div>
+            <div class="like-section">
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" name="like" class="btn btn-primary">
+                        {{ post.likes.count }} Like{% if post.likes.count != 1 %}s{% endif %}
+                    </button>
+                </form>
+            </div>
+            <div class="comment-section">
+                <h3>Comments</h3>
+                {% for comment in post.comments.all %}
+                    <div class="comment-item">
+                        <div>
+                            <strong>{{ comment.user.username }}</strong>: {{ comment.content }} <br>
+                            <small>{{ comment.created_at }}</small>
+                        </div>
+                        {% if comment.user == request.user %}
+                        <form method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            <button type="submit" name="delete_comment" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="comment-form">
+                    <form method="post">
+                        {% csrf_token %}
+                        <textarea name="comment" placeholder="Add a comment..."></textarea>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

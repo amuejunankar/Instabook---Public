@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  {% load static %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile</title>
+    <style>
+      /* Reset styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* Global styles */
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f0f0;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .ua_container {
+        max-width: 1080px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Profile header */
+      .ua_profile-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+      
+      .ua_profile-picture {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin-right: 20px;
+        border: 4px solid #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      .ua_profile-info {
+        flex: 1;
+      }
+      
+      .ua_username {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+      }
+      
+      .ua_name {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      
+      .ua_description {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 15px;
+      }
+      
+      /* Counts section */
+      .ua_counts {
+        display: flex;
+        justify-content: left;
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+      
+      .ua_count {
+        background-color: rgb(190, 255, 232);
+        text-align: center;
+        padding: 4px 24px;
+        border-radius: 12px;
+      }
+      
+      .ua_count h3 {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+      
+      .ua_count p {
+        font-size: 16px;
+        color: #666;
+      }
+      
+      .ua_posts {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+      }
+      
+      .ua_post {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      
+      .ua_post img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 8px 8px 0 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    {% include 'user/navbar.html' %}
+    <div class="ua_container">
+      <div class="ua_profile-header">
+        {% if user_profile and user_profile.profile_picture %}
+          <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture" class="ua_profile-picture" />
+        {% else %}
+          <img src="{% static 'img/account.png' %}" alt="Profile Picture" class="ua_profile-picture" />
+        {% endif %}
+        <div class="ua_profile-info">
+          <div class="ua_username">{{ request.user.username }}</div>
+          <div class="ua_name">{{ request.user.get_full_name }}</div>
+          <div class="ua_description">{{ request.user.profile.description }}</div>
+        </div>
+        
+
+        <div class="ua_counts">
+          <div class="ua_count">
+            <h3>{{ post_count }}</h3>
+            <p>Posts</p>
+          </div>
+  
+          <div class="ua_count">
+            <h3>{{ friend_count }}</h3>
+            <p> <a href="{% url 'profile_friends_list' %}" class="btn btn-secondary">View Friends</a></p>
+          </div>
+        </div>
+      </div>
+
+      <h2>Posts</h2><br />
+      <div class="ua_posts">
+        {% if user_posts %}
+          {% for post in user_posts %}
+            <div class="ua_post">
+              <a href="{% url 'post_detail' post.id %}"><img src="{{ post.image.url }}" alt="Post Image" /></a>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No posts found.</p>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

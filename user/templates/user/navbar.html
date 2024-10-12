@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grammate</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <style>
+
+      .navbar {
+        position: fixed; /* Fixed positioning */
+        top: 0; /* Position at the top */
+        width: 100%; /* Full width */
+        z-index: 1000; /* Set a high z-index value */
+      }
+      
+
+      .navbar-brand img {
+        height: 40px;
+      }
+      
+      .navbar-nav .nav-item {
+        margin-left: 10px;
+      }
+      .badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+      .dropdown-menu {
+        background-color: white !important; /* Ensure background color is set */
+      }
+      /* Ensure the navbar has a background color when collapsed */
+      .navbar-collapse {
+        background-color: #f8f9fa; /* Light background color */
+      }
+      .navbar-toggler.collapsed + .navbar-collapse {
+        display: none; /* Hide collapsible content when toggler is collapsed */
+      }
+      .navbar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .nav-item button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 12px;
+      }
+      
+      .modal-header {
+        background-color: springgreen;
+      }
+      
+      .image-preview {
+        width: 100%;
+        max-width: 250px;
+        height: 300px;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: left;
+        justify-content: left;
+        overflow: hidden;
+        margin: 0 auto;
+      }
+      
+      .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="height: 80px;">
+      {% if user.is_authenticated %}
+        <a class="navbar-brand" href="{% url 'feeds' %}"><img src="{% static 'user/img/logo.png' %}" alt="logo" /></a>
+      {% else %}
+        <a class="navbar-brand" href="{% url 'index' %}"><img src="{% static 'user/img/logo.png' %}" alt="logo" /></a>
+      {% endif %}
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mr-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <form class="form-inline my-2 my-lg-0" action="{% url 'searches' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="SearchUserForm" />
+                <input class="form-control mr-sm-2" value="{{ search_item }}" name="searchItem" type="search" placeholder="Search Friend" aria-label="Search" />
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+            </li>
+          {% endif %}
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              {% comment %} <button class="btn btn-outline-primary"><i class="fas fa-edit"></i> Create Post</button> {% endcomment %}
+              <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#createPostModal"><i class="fas fa-edit"></i> Create Post</button>
+            </li>
+            <li class="nav-item position-relative">
+              <a href="{% url 'friend_requests' %}" class="btn btn-outline-info">
+                <i class="fas fa-user-friends"></i> Friends{% if friend_request_count > 0 %}
+                  <span class="badge badge-danger">{{ friend_request_count }}</span>
+                {% endif %}
+              </a>
+            </li>
+
+            <li class="nav-item position-relative">
+              <a href="{% url 'notifications' %}" class="btn btn-outline-success">
+                <i class="fas fa-bell"></i> Notifications{% if notification_count > 0 %}
+                  <span class="badge badge-danger">{{ notification_count }}</span>
+                {% endif %}
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="btn btn-outline-dark" href="{% url 'friends_list' %}">
+                <i class="fas fa-envelope"></i>
+                Messages
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {% if user_profile and user_profile.profile_picture %}
+                    <img src="{{ user_profile.profile_picture.url }}" alt="Profile Picture" style="width: 25px; height: 25px; border-radius: 50%; margin-right: 5px;" />
+                  {% else %}
+                    <img src="{% static 'img/account.png' %}" alt="Profile Picture" style="width: 25px; height: 25px; border-radius: 50%; margin-right: 5px;" />
+                  {% endif %}Profile
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userMenu">
+                  <a class="dropdown-item" href="{% url 'user_account' %}">View Profile</a>
+                  <a class="dropdown-item" href="{% url 'user_settings' %}">Account Settings</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+              </div>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="btn btn-outline-success" href="{% url 'user_login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-outline-primary" href="{% url 'user_signup' %}">Signup</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Modal -->
+    <div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+      <div class="modaldesign">
+        <div class="modal-dialog">
+          <div class="modal-content custom-modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="createPostModalLabel">Create Post</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body">
+              <form method="post" action="{% url 'create_post' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="createPostForm" />
+                <div class="form-group">
+                  <label for="postImage">Upload Image</label>
+                  <input type="file" class="form-control-file" id="postImage" name="image" onchange="previewImage(event) required" />
+                </div>
+                <div id="imagePreview" class="image-preview mt-3"></div>
+                <div class="form-group">
+                  <label for="postCaption">Caption</label>
+                  <textarea class="form-control" id="postCaption" name="caption" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- END of Modal -->
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        $('#postImage').on('change', function (event) {
+          var reader = new FileReader()
+          reader.onload = function () {
+            var output = $('#imagePreview')
+            output.html('<img src="' + reader.result + '" alt="Image Preview">')
+          }
+          reader.readAsDataURL(event.target.files[0])
+        })
+      })
+    </script>
+  </body>
+</html>
